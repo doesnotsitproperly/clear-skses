@@ -4,25 +4,46 @@
 #include <iostream>
 #include <string>
 
-#ifndef _WIN32
-#error "This program is meant only for Windows!" 
+#ifdef _WIN32
+#define NEWLINE "\r\n"
+#else
+#define NEWLINE "\n"
 #endif
 
 using namespace std;
 using namespace std::filesystem;
 
-int main()
+int main(const int argc, const char* argv[])
 {
-    string user_profile = getenv("USERPROFILE");
+    string save_dir;
 
-    string save_dir = user_profile + "\\Documents\\My Games\\Skyrim Special Edition\\Saves";
-    if (!exists(save_dir))
+    if (argc > 1)
     {
-        save_dir = user_profile + "\\OneDrive\\Documents\\My Games\\Skyrim Special Edition\\Saves";
+        save_dir = argv[1];
         if (!exists(save_dir))
         {
-            cerr << "Unable to find Skyrim save directory\r\n";
+            cerr << "Unable to find provided directory" << NEWLINE;
             return EXIT_FAILURE;
+        }
+    }
+    else
+    {
+        const char* user_profile = getenv("USERPROFILE");
+        if (!user_profile)
+        {
+            cerr << "Unable to find user directory" << NEWLINE;
+            return EXIT_FAILURE;
+        }
+
+        save_dir = string(user_profile) + "\\Documents\\My Games\\Skyrim Special Edition\\Saves";
+        if (!exists(save_dir))
+        {
+            save_dir = string(user_profile) + "\\OneDrive\\Documents\\My Games\\Skyrim Special Edition\\Saves";
+            if (!exists(save_dir))
+            {
+                cerr << "Unable to find Skyrim save directory" << NEWLINE;
+                return EXIT_FAILURE;
+            }
         }
     }
 
@@ -40,7 +61,7 @@ int main()
         }
     }
 
-    cout << "Deleted " << deleted << " files\r\n";
+    cout << "Deleted " << deleted << " files" << NEWLINE;
 
     return EXIT_SUCCESS;
 }
