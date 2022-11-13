@@ -1,4 +1,4 @@
-# Clear SKSE Files
+# Clear SKSE's
 
 Command-line tool to delete SKSE files left behind after their corresponding saves have been deleted
 
@@ -14,3 +14,5 @@ Note: All options must be preceded by - or --
 ```
 
 If on Windows, `[directory]` is optional; if not provided `%USERPROFILE%\Documents\My Games\Skyrim Special Edition\Saves` or `%USERPROFILE%\OneDrive\Documents\My Games\Skyrim Special Edition\Saves` will be searched
+
+Yes, the name is a reference to the "Clear Skies" shout
