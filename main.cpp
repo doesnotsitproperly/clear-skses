@@ -25,7 +25,11 @@ int main(const int argc, const char* argv[])
     {
         if (arg_compare(argv[i], "h", "help"))
         {
+#ifdef _WIN32
             cout << "Usage: <executable> [options] [directory]" << NEWLINE;
+#else
+            cout << "Usage: <executable> [options] <directory>" << NEWLINE;
+#endif
             cout << "Options:" << NEWLINE;
             cout << "h, help    Display this info" << NEWLINE;
             cout << "l, list    List files that get deleted" << NEWLINE;
@@ -43,6 +47,11 @@ int main(const int argc, const char* argv[])
 
     if (save_dir == "")
     {
+#ifndef _WIN32
+        cerr << "No directory was provided!" << NEWLINE;
+        return EXIT_FAILURE;
+#endif
+
         const char* user_profile = getenv("USERPROFILE");
         if (!user_profile)
         {
@@ -76,8 +85,12 @@ int main(const int argc, const char* argv[])
     {
         path entry_path = entry.path();
         if (entry_path.extension() == ".skse")
-        {            
+        {
+#ifdef _WIN32
             if (!exists(entry_path.parent_path().string() + "\\" + entry_path.stem().string() + ".ess"))
+#else
+            if (!exists(entry_path.parent_path().string() + "/" + entry_path.stem().string() + ".ess"))
+#endif
             {
                 remove(entry_path.string().c_str());
                 deleted++;
