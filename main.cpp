@@ -110,6 +110,10 @@ int main(const int argc, const char* argv[])
         }
     }
 
+#if defined(_WIN32) && !defined(NO_WAIT)
+    system("pause");
+#endif
+
     return EXIT_SUCCESS;
 }
 

@@ -15,4 +15,7 @@ Note: All options must be preceded by - or --
 
 If on Windows, `[directory]` is optional; if not provided `%USERPROFILE%\Documents\My Games\Skyrim Special Edition\Saves` or `%USERPROFILE%\OneDrive\Documents\My Games\Skyrim Special Edition\Saves` will be searched
 
+If compiled on Windows and without `NO_WAIT` defined, `pause` will be called before the program ends  
+This is how the release is compiled
+
 Yes, the name is a reference to the "Clear Skies" shout
