@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <iostream>
 #include <string>
+#include <vector>
 
 #ifdef _WIN32
 #define NEWLINE "\r\n"
@@ -13,20 +14,34 @@
 using namespace std;
 using namespace std::filesystem;
 
+bool arg_compare(const char* arg, const char* short_arg, const char* long_arg);
+
 int main(const int argc, const char* argv[])
 {
-    string save_dir;
-
-    if (argc > 1)
+    bool list = false;
+    bool quiet = false;
+    string save_dir = "";
+    for (int i = 1; i < argc; i++)
     {
-        save_dir = argv[1];
-        if (!exists(save_dir))
+        if (arg_compare(argv[i], "h", "help"))
         {
-            cerr << "Unable to find provided directory" << NEWLINE;
-            return EXIT_FAILURE;
+            cout << "Usage: <executable> [options] [directory]" << NEWLINE;
+            cout << "Options:" << NEWLINE;
+            cout << "h, help    Display this info" << NEWLINE;
+            cout << "l, list    List files that get deleted" << NEWLINE;
+            cout << "q, quiet   Do not display any output besides errors (overrides l/list)" << NEWLINE;
+            cout << "Note: All options must be preceded by - or --" << NEWLINE;
+            return EXIT_SUCCESS;
         }
+        else if (arg_compare(argv[i], "l", "list"))
+            list = true;
+        else if (arg_compare(argv[i], "q", "quiet"))
+            quiet = true;
+        else
+            save_dir = argv[i];
     }
-    else
+
+    if (save_dir == "")
     {
         const char* user_profile = getenv("USERPROFILE");
         if (!user_profile)
@@ -46,8 +61,17 @@ int main(const int argc, const char* argv[])
             }
         }
     }
+    else
+    {
+        if (!exists(save_dir))
+        {
+            cerr << "Unable to find provided directory" << NEWLINE;
+            return EXIT_FAILURE;
+        }
+    }
 
-    int deleted = 0;
+    size_t deleted = 0;
+    vector<string> deleted_files;
     for (const directory_entry &entry : directory_iterator(save_dir))
     {
         path entry_path = entry.path();
@@ -57,11 +81,40 @@ int main(const int argc, const char* argv[])
             {
                 remove(entry_path.string().c_str());
                 deleted++;
+                if (list)
+                    deleted_files.push_back(entry_path.string());
             }
         }
     }
 
-    cout << "Deleted " << deleted << " files" << NEWLINE;
+    if (!quiet)
+    {
+        cout << "Deleted " << deleted << " file(s)" << NEWLINE;
+        if (list)
+        {
+            for (string file : deleted_files)
+                cout << "Deleted \"" << file << "\"" << NEWLINE;
+        }
+    }
 
     return EXIT_SUCCESS;
+}
+
+bool arg_compare(const char* arg, const char* short_arg, const char* long_arg)
+{
+    const string arg_str = arg;
+    const string short_arg_str = short_arg;
+    const string long_arg_str = long_arg;
+
+    if ("-" + short_arg_str == arg_str)
+        return true;
+    if ("--" + short_arg_str == arg_str)
+        return true;
+
+    if ("-" + long_arg_str == arg_str)
+        return true;
+    if ("--" + long_arg_str == arg_str)
+        return true;
+
+    return false;
 }
