@@ -19,6 +19,7 @@ bool arg_compare(const char* arg, const char* short_arg, const char* long_arg);
 int main(const int argc, const char* argv[])
 {
     bool list = false;
+    bool no_wait = false;
     bool quiet = false;
     string save_dir = "";
     for (int i = 1; i < argc; i++)
@@ -27,18 +28,26 @@ int main(const int argc, const char* argv[])
         {
 #ifdef _WIN32
             cout << "Usage: <executable> [options] [directory]" << NEWLINE;
+            cout << "Options:" << NEWLINE;
+            cout << "h, help    Display this info" << NEWLINE;
+            cout << "l, list    List files that get deleted" << NEWLINE;
+            cout << "no-wait    Do not wait for input before program ends" << NEWLINE;
+            cout << "q, quiet   Do not display any output besides errors (overrides l/list)" << NEWLINE;
+            cout << "Note: All options must be preceded by - or --" << NEWLINE;
 #else
             cout << "Usage: <executable> [options] <directory>" << NEWLINE;
-#endif
             cout << "Options:" << NEWLINE;
             cout << "h, help    Display this info" << NEWLINE;
             cout << "l, list    List files that get deleted" << NEWLINE;
             cout << "q, quiet   Do not display any output besides errors (overrides l/list)" << NEWLINE;
             cout << "Note: All options must be preceded by - or --" << NEWLINE;
+#endif
             return EXIT_SUCCESS;
         }
         else if (arg_compare(argv[i], "l", "list"))
             list = true;
+        else if (arg_compare(argv[i], "no-wait", NULL))
+            no_wait = true;
         else if (arg_compare(argv[i], "q", "quiet"))
             quiet = true;
         else
@@ -110,8 +119,9 @@ int main(const int argc, const char* argv[])
         }
     }
 
-#if defined(_WIN32) && !defined(NO_WAIT)
-    system("pause");
+#if defined(_WIN32)
+    if (!no_wait && !quiet)
+        system("pause");
 #endif
 
     return EXIT_SUCCESS;
@@ -128,10 +138,13 @@ bool arg_compare(const char* arg, const char* short_arg, const char* long_arg)
     if ("--" + short_arg_str == arg_str)
         return true;
 
-    if ("-" + long_arg_str == arg_str)
-        return true;
-    if ("--" + long_arg_str == arg_str)
-        return true;
+    if (long_arg)
+    {
+        if ("-" + long_arg_str == arg_str)
+            return true;
+        if ("--" + long_arg_str == arg_str)
+            return true;
+    }
 
     return false;
 }
