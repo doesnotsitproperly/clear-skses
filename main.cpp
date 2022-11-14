@@ -19,7 +19,9 @@ bool arg_compare(const char* arg, const char* short_arg, const char* long_arg);
 int main(const int argc, const char* argv[])
 {
     bool list = false;
+#ifdef _WIN32
     bool no_wait = false;
+#endif
     bool quiet = false;
     string save_dir = "";
     for (int i = 1; i < argc; i++)
@@ -46,8 +48,10 @@ int main(const int argc, const char* argv[])
         }
         else if (arg_compare(argv[i], "l", "list"))
             list = true;
-        else if (arg_compare(argv[i], "no-wait", NULL))
+#ifdef _WIN32
+        else if (arg_compare(argv[i], "no-wait", ""))
             no_wait = true;
+#endif
         else if (arg_compare(argv[i], "q", "quiet"))
             quiet = true;
         else
@@ -56,11 +60,7 @@ int main(const int argc, const char* argv[])
 
     if (save_dir == "")
     {
-#ifndef _WIN32
-        cerr << "No directory was provided!" << NEWLINE;
-        return EXIT_FAILURE;
-#endif
-
+#ifdef _WIN32
         const char* user_profile = getenv("USERPROFILE");
         if (!user_profile)
         {
@@ -78,6 +78,10 @@ int main(const int argc, const char* argv[])
                 return EXIT_FAILURE;
             }
         }
+#else
+        cerr << "No directory was provided!" << NEWLINE;
+        return EXIT_FAILURE;
+#endif
     }
     else
     {
@@ -117,12 +121,11 @@ int main(const int argc, const char* argv[])
             for (string file : deleted_files)
                 cout << "Deleted \"" << file << "\"" << NEWLINE;
         }
-    }
-
 #ifdef _WIN32
-    if (!no_wait && !quiet)
-        system("pause");
+        if (!no_wait)
+            system("pause");
 #endif
+    }
 
     return EXIT_SUCCESS;
 }
@@ -138,13 +141,10 @@ bool arg_compare(const char* arg, const char* short_arg, const char* long_arg)
     if ("--" + short_arg_str == arg_str)
         return true;
 
-    if (long_arg)
-    {
-        if ("-" + long_arg_str == arg_str)
-            return true;
-        if ("--" + long_arg_str == arg_str)
-            return true;
-    }
+    if ("-" + long_arg_str == arg_str)
+        return true;
+    if ("--" + long_arg_str == arg_str)
+        return true;
 
     return false;
 }
