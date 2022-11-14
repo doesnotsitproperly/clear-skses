@@ -14,6 +14,6 @@ q, quiet   Do not display any output besides errors (overrides l/list)
 Note: All options must be preceded by - or --
 ```
 
-If on Windows, `[directory]` is optional; if not provided `%USERPROFILE%\Documents\My Games\Skyrim Special Edition\Saves` or `%USERPROFILE%\OneDrive\Documents\My Games\Skyrim Special Edition\Saves` will be searched
+If on Windows, `[directory]` is optional; if not provided `%USERPROFILE%\Documents\My Games\Skyrim Special Edition\Saves` or `%USERPROFILE%\OneDrive\Documents\My Games\Skyrim Special Edition\Saves` will be used
 
 Yes, the name is a reference to the "Clear Skies" shout

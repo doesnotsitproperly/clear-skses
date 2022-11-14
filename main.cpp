@@ -119,7 +119,7 @@ int main(const int argc, const char* argv[])
         }
     }
 
-#if defined(_WIN32)
+#ifdef _WIN32
     if (!no_wait && !quiet)
         system("pause");
 #endif
