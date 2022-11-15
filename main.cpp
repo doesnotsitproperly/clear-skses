@@ -5,12 +5,6 @@
 #include <string>
 #include <vector>
 
-#ifdef _WIN32
-#define NEWLINE "\r\n"
-#else
-#define NEWLINE "\n"
-#endif
-
 using namespace std;
 using namespace std::filesystem;
 
@@ -29,21 +23,18 @@ int main(const int argc, const char* argv[])
         if (arg_compare(argv[i], "h", "help"))
         {
 #ifdef _WIN32
-            cout << "Usage: <executable> [options] [directory]" << NEWLINE;
-            cout << "Options:" << NEWLINE;
-            cout << "h, help    Display this info" << NEWLINE;
-            cout << "l, list    List files that get deleted" << NEWLINE;
-            cout << "no-wait    Do not wait for input before program ends" << NEWLINE;
-            cout << "q, quiet   Do not display any output besides errors (overrides l/list)" << NEWLINE;
-            cout << "Note: All options must be preceded by - or --" << NEWLINE;
+            cout << "Usage: <executable> [options] [directory]\n";
 #else
-            cout << "Usage: <executable> [options] <directory>" << NEWLINE;
-            cout << "Options:" << NEWLINE;
-            cout << "h, help    Display this info" << NEWLINE;
-            cout << "l, list    List files that get deleted" << NEWLINE;
-            cout << "q, quiet   Do not display any output besides errors (overrides l/list)" << NEWLINE;
-            cout << "Note: All options must be preceded by - or --" << NEWLINE;
+            cout << "Usage: <executable> [options] <directory>\n";
 #endif
+            cout << "Options:\n";
+            cout << "h, help    Display this info\n";
+            cout << "l, list    List files that get deleted\n";
+#ifdef _WIN32
+            cout << "no-wait    Do not wait for input before program ends\n";
+#endif
+            cout << "q, quiet   Do not display any output besides errors (overrides l/list)\n";
+            cout << "Note: All options must be preceded by - or --\n";
             return EXIT_SUCCESS;
         }
         else if (arg_compare(argv[i], "l", "list"))
@@ -64,7 +55,7 @@ int main(const int argc, const char* argv[])
         const char* user_profile = getenv("USERPROFILE");
         if (!user_profile)
         {
-            cerr << "Unable to find user directory" << NEWLINE;
+            cerr << "Unable to find user directory\n";
             return EXIT_FAILURE;
         }
 
@@ -74,22 +65,19 @@ int main(const int argc, const char* argv[])
             save_dir = string(user_profile) + "\\OneDrive\\Documents\\My Games\\Skyrim Special Edition\\Saves";
             if (!exists(save_dir))
             {
-                cerr << "Unable to find Skyrim save directory" << NEWLINE;
+                cerr << "Unable to find Skyrim save directory\n";
                 return EXIT_FAILURE;
             }
         }
 #else
-        cerr << "No directory was provided!" << NEWLINE;
+        cerr << "No directory was provided!\n";
         return EXIT_FAILURE;
 #endif
     }
-    else
+    else if (!exists(save_dir))
     {
-        if (!exists(save_dir))
-        {
-            cerr << "Unable to find provided directory" << NEWLINE;
-            return EXIT_FAILURE;
-        }
+        cerr << "Unable to find provided directory\n";
+        return EXIT_FAILURE;
     }
 
     size_t deleted = 0;
@@ -115,11 +103,11 @@ int main(const int argc, const char* argv[])
 
     if (!quiet)
     {
-        cout << "Deleted " << deleted << " file(s)" << NEWLINE;
+        cout << "Deleted " << deleted << " file(s)\n";
         if (list)
         {
             for (string file : deleted_files)
-                cout << "Deleted \"" << file << "\"" << NEWLINE;
+                cout << "Deleted \"" << file << "\"\n";
         }
 #ifdef _WIN32
         if (!no_wait)
