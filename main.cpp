@@ -17,6 +17,7 @@ int main(const int argc, const char* argv[])
     bool no_wait = false;
 #endif
     bool quiet = false;
+    bool version = false;
     string save_dir = "";
     for (int i = 1; i < argc; i++)
     {
@@ -28,12 +29,13 @@ int main(const int argc, const char* argv[])
             cout << "Usage: <executable> [options] <directory>\n";
 #endif
             cout << "Options:\n";
-            cout << "h, help    Display this info\n";
-            cout << "l, list    List files that get deleted\n";
+            cout << "h, help      Display this info\n";
+            cout << "l, list      List files that get deleted\n";
 #ifdef _WIN32
-            cout << "no-wait    Do not wait for input before program ends\n";
+            cout << "no-wait      Do not wait for input before program ends\n";
 #endif
-            cout << "q, quiet   Do not display any output besides errors (overrides l/list)\n";
+            cout << "q, quiet     Do not display any output besides errors (overrides l/list)\n";
+            cout << "v, version   Display Clear SKSE's version\n";
             cout << "Note: All options must be preceded by - or --\n";
             return EXIT_SUCCESS;
         }
@@ -45,9 +47,14 @@ int main(const int argc, const char* argv[])
 #endif
         else if (arg_compare(argv[i], "q", "quiet"))
             quiet = true;
+        else if (arg_compare(argv[i], "v", "version"))
+            version = true;
         else
             save_dir = argv[i];
     }
+
+    if (version)
+        cout << "Clear SKSE's v3\n";
 
     if (save_dir == "")
     {

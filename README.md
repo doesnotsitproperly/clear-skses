@@ -7,10 +7,11 @@ Command-line tool to delete SKSE files left behind after their corresponding sav
 ```
 Usage: <executable> [options] [directory]
 Options:
-h, help    Display this info
-l, list    List files that get deleted
-no-wait    Do not wait for input before program ends
-q, quiet   Do not display any output besides errors (overrides l/list)
+h, help      Display this info
+l, list      List files that get deleted
+no-wait      Do not wait for input before program ends
+q, quiet     Do not display any output besides errors (overrides l/list)
+v, version   Display Clear SKSE's version
 Note: All options must be preceded by - or --
 ```
 
