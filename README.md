@@ -15,6 +15,10 @@ v, version   Display Clear SKSE's version
 Note: All options must be preceded by - or --
 ```
 
-If on Windows, `[directory]` is optional; if not provided `%USERPROFILE%\Documents\My Games\Skyrim Special Edition\Saves` or `%USERPROFILE%\OneDrive\Documents\My Games\Skyrim Special Edition\Saves` will be used
+If on Windows, `[directory]` is optional; if not provided, a few directories are checked for automatically:
+- `%USERPROFILE%\Documents\My Games\Skyrim Special Edition\Saves`
+- `%USERPROFILE%\OneDrive\Documents\My Games\Skyrim Special Edition\Saves`
+- `%USERPROFILE%\Documents\My Games\Skyrim Special Edition GOG\Saves`
+- `%USERPROFILE%\OneDrive\Documents\My Games\Skyrim Special Edition GOG\Saves`
 
 Yes, the name is a reference to the "Clear Skies" shout
