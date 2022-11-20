@@ -72,8 +72,16 @@ int main(const int argc, const char* argv[])
             save_dir = string(user_profile) + "\\OneDrive\\Documents\\My Games\\Skyrim Special Edition\\Saves";
             if (!exists(save_dir))
             {
-                cerr << "Unable to find Skyrim save directory\n";
-                return EXIT_FAILURE;
+                save_dir = string(user_profile) + "\\Documents\\My Games\\Skyrim Special Edition GOG\\Saves";
+                if (!exists(save_dir))
+                {
+                    save_dir = string(user_profile) + "\\OneDrive\\Documents\\My Games\\Skyrim Special Edition GOG\\Saves";
+                    if (!exists(save_dir))
+                    {
+                        cerr << "Unable to find Skyrim save directory\n";
+                        return EXIT_FAILURE;
+                    }
+                }
             }
         }
 #else
