@@ -54,7 +54,7 @@ int main(const int argc, const char* argv[])
     }
 
     if (version)
-        cout << "Clear SKSE's v3\n";
+        cout << "Clear SKSE's v4\n";
 
     if (save_dir == "")
     {
