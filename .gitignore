@@ -1,3 +1,5 @@
 .vscode/
+*.7z
 *.exe
 *.out
+*.zip
