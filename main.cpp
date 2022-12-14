@@ -16,7 +16,6 @@ int main(int argc, char* argv[])
 	bool no_wait = false;
 #endif
 	bool quiet = false;
-	bool version = false;
 	std::string save_dir = "";
 	for (int i = 1; i < argc; i++)
 	{
