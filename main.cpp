@@ -38,7 +38,16 @@ int main(int argc, char* argv[])
 			std::cout << "Note: All options must be preceded by - or --\n";
 			return EXIT_SUCCESS;
 		}
-		else if (arg_compare(argv[i], "l", "list"))
+		else if (arg_compare(argv[i], "v", "version"))
+		{
+			std::cout << "Clear SKSE's v5\n";
+			return EXIT_SUCCESS;
+		}
+	}
+
+	for (int i = 1; i < argc; i++)
+	{
+		if (arg_compare(argv[i], "l", "list"))
 			list = true;
 #ifdef _WIN32
 		else if (arg_compare(argv[i], "no-wait", ""))
@@ -46,14 +55,9 @@ int main(int argc, char* argv[])
 #endif
 		else if (arg_compare(argv[i], "q", "quiet"))
 			quiet = true;
-		else if (arg_compare(argv[i], "v", "version"))
-			version = true;
 		else
 			save_dir = argv[i];
 	}
-
-	if (version)
-		std::cout << "Clear SKSE's v4\n";
 
 	if (save_dir == "")
 	{
