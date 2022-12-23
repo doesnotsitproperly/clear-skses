@@ -1,13 +1,4 @@
-#include <cstdio>
-#include <cstdlib>
-#include <filesystem>
-#include <iostream>
-#include <string>
-#include <vector>
-
-namespace fs = std::filesystem;
-
-bool arg_compare(const char* arg, const char* short_arg, const char* long_arg);
+#include "main.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -61,31 +52,7 @@ int main(int argc, char* argv[])
 	if (save_dir == "")
 	{
 #ifdef _WIN32
-		const char* user_profile = std::getenv("USERPROFILE");
-		if (!user_profile)
-		{
-			std::cerr << "Unable to find user directory\n";
-			return EXIT_FAILURE;
-		}
-
-		save_dir = std::string(user_profile) + "\\Documents\\My Games\\Skyrim Special Edition\\Saves";
-		if (!fs::exists(save_dir))
-		{
-			save_dir = std::string(user_profile) + "\\OneDrive\\Documents\\My Games\\Skyrim Special Edition\\Saves";
-			if (!fs::exists(save_dir))
-			{
-				save_dir = std::string(user_profile) + "\\Documents\\My Games\\Skyrim Special Edition GOG\\Saves";
-				if (!fs::exists(save_dir))
-				{
-					save_dir = std::string(user_profile) + "\\OneDrive\\Documents\\My Games\\Skyrim Special Edition GOG\\Saves";
-					if (!fs::exists(save_dir))
-					{
-						std::cerr << "Unable to find Skyrim save directory\n";
-						return EXIT_FAILURE;
-					}
-				}
-			}
-		}
+		save_dir = get_save_dir();
 #else
 		std::cerr << "No directory was provided!\n";
 		return EXIT_FAILURE;
@@ -98,34 +65,24 @@ int main(int argc, char* argv[])
 	}
 
 	size_t deleted = 0;
-	std::vector<std::string> deleted_files;
 	for (const fs::directory_entry& entry : fs::directory_iterator(save_dir))
 	{
 		fs::path entry_path = entry.path();
 		if (entry_path.extension() == ".skse")
 		{
-#ifdef _WIN32
-			if (!fs::exists(entry_path.parent_path().string() + "\\" + entry_path.stem().string() + ".ess"))
-#else
-			if (!fs::exists(entry_path.parent_path().string() + "/" + entry_path.stem().string() + ".ess"))
-#endif
+			if (!fs::exists((entry_path.parent_path() / entry_path.stem()).string() + ".ess"))
 			{
 				std::remove(entry_path.string().c_str());
 				deleted++;
-				if (list)
-					deleted_files.push_back(entry_path.string());
+				if (list && !quiet)
+					std::cout << "Deleted \"" << entry_path.string() << "\"\n";
 			}
 		}
 	}
 
 	if (!quiet)
 	{
-		std::cout << "Deleted " << deleted << " file(s)\n";
-		if (list)
-		{
-			for (std::string file : deleted_files)
-				std::cout << "Deleted \"" << file << "\"\n";
-		}
+		std::cout << "Deleted " << deleted << " files\n";
 #ifdef _WIN32
 		if (!no_wait)
 			std::system("pause");
@@ -133,23 +90,4 @@ int main(int argc, char* argv[])
 	}
 
 	return EXIT_SUCCESS;
-}
-
-bool arg_compare(const char* arg, const char* short_arg, const char* long_arg)
-{
-	const std::string ARG_STR = arg;
-	const std::string SHORT_ARG_STR = short_arg;
-	const std::string LONG_ARG_STR = long_arg;
-
-	if (ARG_STR == "-" + SHORT_ARG_STR)
-		return true;
-	if (ARG_STR == "--" + SHORT_ARG_STR)
-		return true;
-
-	if (ARG_STR == "-" + LONG_ARG_STR)
-		return true;
-	if (ARG_STR == "--" + LONG_ARG_STR)
-		return true;
-
-	return false;
 }
