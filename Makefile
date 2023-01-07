@@ -1,21 +1,25 @@
-CXXFLAGS := -Wall -O2
+CC := gcc
+CFLAGS := -Wall -O2
 
 default:
 ifeq ($(OS), Windows_NT)
-	$(CXX) main.cpp $(CXXFLAGS) -o ClearSKSEs.exe
-	7z a ClearSKSEs-$(VERSION).7z ClearSKSEs.exe
-	7z a ClearSKSEs-$(VERSION).zip ClearSKSEs.exe
+	$(CC) main.c $(CFLAGS) -o ClearSKSEs.exe
 else
-	$(CXX) main.cpp $(CXXFLAGS) -o ClearSKSEs
-	7z a ClearSKSEs-$(VERSION).7z ClearSKSEs
-	7z a ClearSKSEs-$(VERSION).zip ClearSKSEs
+	$(CC) main.c $(CFLAGS) -o ClearSKSEs
 endif
 
-run:
+archives: default
 ifeq ($(OS), Windows_NT)
-	$(CXX) main.cpp $(CXXFLAGS) -o ClearSKSEs.exe
+	7z a ClearSKSEs-v6.7z ClearSKSEs.exe
+	7z a ClearSKSEs-v6.zip ClearSKSEs.exe
+else
+	7z a ClearSKSEs-v6.7z ClearSKSEs
+	7z a ClearSKSEs-v6.zip ClearSKSEs
+endif
+
+run: default
+ifeq ($(OS), Windows_NT)
 	.\ClearSKSEs.exe -no-wait
 else
-	$(CXX) main.cpp $(CXXFLAGS) -o ClearSKSEs
 	./ClearSKSEs
 endif
