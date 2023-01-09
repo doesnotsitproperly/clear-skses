@@ -28,7 +28,7 @@ typedef struct
 
 bool arg_compare(const char* a, const char* b)
 {
-	char* arg = (char*) malloc(sizeof(char) * (strlen(b) + 2));
+	char* arg = (char*) malloc(sizeof(char) * (strlen(b) + 2)); // 2 extra spaces for "-" and null terminator
 	strcpy(arg, "-");
 	strcat(arg, b);
 	if (strcmp(a, arg) == 0)
@@ -37,7 +37,7 @@ bool arg_compare(const char* a, const char* b)
 		return true;
 	}
 
-	arg = (char*) realloc(arg, sizeof(char) * (strlen(b) + 3));
+	arg = (char*) realloc(arg, sizeof(char) * (strlen(b) + 3)); // 2 extra spaces for "--" and null terminator
 	strcpy(arg, "--");
 	strcat(arg, b);
 	if (strcmp(a, arg) == 0)
@@ -103,7 +103,7 @@ char* get_stem(const char* path)
 		return stem;
 
 	for (size_t i = 0; i < strlen(extension); i++)
-		extension[i] = '\0';
+		extension[i] = '\0'; // Replace the characters representing the extension with null
 
 	return stem;
 }
@@ -202,6 +202,7 @@ char* get_save_dir(void)
 	if (dir_exists(save_dir))
 		return save_dir;
 
+	free(save_dir);
 	fprintf(stderr, "Unable to find Skyrim save directory\n");
 	exit(EXIT_FAILURE);
 }

@@ -52,14 +52,22 @@ int main(int argc, char* argv[])
 #endif
 		else if (arg_compare(argv[i], "q") || arg_compare(argv[i], "quiet"))
 			quiet = true;
+		else if (save_dir) // save_dir is freed later, so it has to be allocated
+		{
+			save_dir = (char*) realloc(save_dir, sizeof(char) * (strlen(argv[i]) + 1)); // Always allocate an extra space for the null terminator
+			strcpy(save_dir, argv[i]);
+		}
 		else
-			save_dir = argv[i];
+		{
+			save_dir = (char*) malloc(sizeof(char) * (strlen(argv[i]) + 1));
+			strcpy(save_dir, argv[i]);
+		}
 	}
 
 	if (!save_dir)
 	{
 #ifdef _WIN32
-		save_dir = get_save_dir();
+		save_dir = get_save_dir(); // Allocates to save_dir, which is why save_dir is freed later
 #else
 		fprintf(stderr, "No directory was provided!\n");
 		return EXIT_FAILURE;
@@ -81,7 +89,7 @@ int main(int argc, char* argv[])
 			char* stem = get_stem(f->paths[i]);
 			char* path = join_paths(save_dir, stem);
 			free(stem);
-			path = (char*) realloc(path, sizeof(char) * (strlen(path) + 5));
+			path = (char*) realloc(path, sizeof(char) * (strlen(path) + 5)); // 5 extra spaces for ".ess" and null terminator
 			strcat(path, ".ess");
 			if (!file_exists(path))
 			{
