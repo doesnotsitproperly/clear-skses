@@ -10,11 +10,11 @@ endif
 
 archives: default
 ifeq ($(OS), Windows_NT)
-	7z a ClearSKSEs-v6.7z ClearSKSEs.exe
-	7z a ClearSKSEs-v6.zip ClearSKSEs.exe
+	7z a ClearSKSEs-v7.7z ClearSKSEs.exe
+	7z a ClearSKSEs-v7.zip ClearSKSEs.exe
 else
-	7z a ClearSKSEs-v6.7z ClearSKSEs
-	7z a ClearSKSEs-v6.zip ClearSKSEs
+	7z a ClearSKSEs-v7.7z ClearSKSEs
+	7z a ClearSKSEs-v7.zip ClearSKSEs
 endif
 
 run: default

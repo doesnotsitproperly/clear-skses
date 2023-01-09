@@ -34,9 +34,9 @@ int main(int argc, char* argv[])
 		else if (arg_compare(argv[i], "v") || arg_compare(argv[i], "version"))
 		{
 #ifdef __cplusplus
-			printf("Clear SKSE's v6 (C++)\n");
+			printf("Clear SKSE's v7 (C++)\n");
 #else
-			printf("Clear SKSE's v6 (C)\n");
+			printf("Clear SKSE's v7 (C)\n");
 #endif
 			return EXIT_SUCCESS;
 		}
