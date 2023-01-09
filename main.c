@@ -72,34 +72,13 @@ int main(int argc, char* argv[])
 	}
 
 	size_t deleted = 0;
-
-#ifdef __cplusplus
-
-	for (const directory_entry& entry : directory_iterator(save_dir))
+	files* f = get_files(save_dir);
+	for (size_t i = 0; i < f->size; i++)
 	{
-		path entry_path = entry.path();
-		if (entry_path.extension() == ".skse")
-		{
-			if (!exists((save_dir / entry_path.stem()).string() + ".ess"))
-			{
-				remove(entry_path.string().c_str());
-				deleted++;
-				if (list && !quiet)
-					printf("Deleted \"%s\"\n", entry_path.string().c_str());
-			}
-		}
-	}
-
-#else
-
-	DIR* dir = opendir(save_dir);
-	struct dirent* de = readdir(dir);
-	while (de)
-	{
-		char* extension = get_extension(de->d_name);
+		char* extension = get_extension(f->paths[i]);
 		if (strcmp(extension, ".skse") == 0)
 		{
-			char* stem = get_stem(de->d_name);
+			char* stem = get_stem(f->paths[i]);
 			char* path = join_paths(save_dir, stem);
 			free(stem);
 			path = (char*) realloc(path, sizeof(char) * (strlen(path) + 5));
@@ -107,7 +86,7 @@ int main(int argc, char* argv[])
 			if (!file_exists(path))
 			{
 				free(path);
-				path = join_paths(save_dir, de->d_name);
+				path = join_paths(save_dir, f->paths[i]);
 				remove(path);
 				deleted++;
 				if (list && !quiet)
@@ -117,11 +96,10 @@ int main(int argc, char* argv[])
 		}
 		free(extension);
 
-		de = readdir(dir);
+		free(f->paths[i]);
 	}
-	closedir(dir);
-
-#endif
+	free(f->paths);
+	free(f);
 
 	if (!quiet)
 	{

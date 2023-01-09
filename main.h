@@ -20,6 +20,12 @@ using namespace std::filesystem;
 
 #endif
 
+typedef struct
+{
+	size_t size;
+	char** paths;
+} files;
+
 bool arg_compare(const char* a, const char* b)
 {
 	char* arg = (char*) malloc(sizeof(char) * (strlen(b) + 2));
@@ -61,24 +67,29 @@ bool dir_exists(const char* path)
 #endif
 }
 
-// Functions just for C
-
-#ifndef __cplusplus
-
-char* join_paths(const char* a, const char* b)
+bool file_exists(const char* path)
 {
-	char* path = (char*) malloc(sizeof(char) * (strlen(a) + strlen(b) + 2));
-	strcpy(path, a);
+	FILE* f = fopen(path, "r");
+	if (f)
+	{
+		fclose(f);
+		return true;
+	}
+	else
+		return false;
+}
 
-#ifdef _WIN32
-	strcat(path, "\\");
-#else
-	strcat(path, "/");
-#endif
-
-	strcat(path, b);
-
-	return path;
+char* get_extension(const char* path)
+{
+	char* extension = (char*) malloc(sizeof(char));
+	strcpy(extension, "");
+	char* temp = strrchr(path, '.');
+	if (temp)
+	{
+		extension = (char*) realloc(extension, sizeof(char) * (strlen(temp) + 1));
+		strcat(extension, temp);
+	}
+	return extension;
 }
 
 char* get_stem(const char* path)
@@ -97,38 +108,71 @@ char* get_stem(const char* path)
 	return stem;
 }
 
-char* get_extension(const char* path)
+char* join_paths(const char* a, const char* b)
 {
-	char* extension = (char*) malloc(sizeof(char));
-	strcpy(extension, "");
-	char* temp = strrchr(path, '.');
-	if (temp)
-	{
-		extension = (char*) realloc(extension, sizeof(char) * (strlen(temp) + 1));
-		strcat(extension, temp);
-	}
-	return extension;
+	char* path = (char*) malloc(sizeof(char) * (strlen(a) + strlen(b) + 2));
+	strcpy(path, a);
+
+#ifdef _WIN32
+	strcat(path, "\\");
+#else
+	strcat(path, "/");
+#endif
+
+	strcat(path, b);
+
+	return path;
 }
 
-bool file_exists(const char* path)
+files* get_files(const char* path)
 {
-	FILE* f = fopen(path, "r");
-	if (f)
+	files* f = (files*) malloc(sizeof(files));
+	f->size = 0;
+	f->paths = (char**) malloc(sizeof(char*));
+
+#ifdef __cplusplus
+
+	for (const directory_entry& entry : directory_iterator(path))
 	{
-		fclose(f);
-		return true;
+		std::filesystem::path name = entry.path().filename();
+
+		f->size++;
+		f->paths = (char**) realloc(f->paths, sizeof(char*) * f->size);
+
+		f->paths[f->size - 1] = (char*) malloc(sizeof(char) * (name.string().length() + 1));
+		strcpy(f->paths[f->size - 1], name.string().c_str());
 	}
-	else
-		return false;
-}
+
+#else
+
+	DIR* dir = opendir(path);
+	struct dirent* de = readdir(dir);
+	while (de)
+	{
+		if (strcmp(de->d_name, ".") != 0 && strcmp(de->d_name, "..") != 0)
+		{
+			f->size++;
+			f->paths = (char**) realloc(f->paths, sizeof(char*) * f->size);
+
+			f->paths[f->size - 1] = (char*) malloc(sizeof(char) * (strlen(de->d_name) + 1));
+			strcpy(f->paths[f->size - 1], de->d_name);
+		}
+		de = readdir(dir);
+	}
+	closedir(dir);
 
 #endif
 
-// Function just for Windows
+	return f;
+}
 
 #ifdef _WIN32
 
+#ifdef __cplusplus
+char* get_save_dir()
+#else
 char* get_save_dir(void)
+#endif
 {
 	const char* user_profile = getenv("USERPROFILE");
 	if (!user_profile)
